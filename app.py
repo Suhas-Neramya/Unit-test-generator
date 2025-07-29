@@ -131,27 +131,6 @@ def generate_test():
         print(f"Error during OpenAI API call: {e}")
         return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
 
-@app.after_request
-def add_security_headers(response):
-    # Security headers for production
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    
-    # Only add CSP in production
-    if not app.debug:
-        response.headers['Content-Security-Policy'] = (
-            "default-src 'self'; "
-            "script-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
-            "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; "
-            "font-src 'self'; "
-            "img-src 'self' data:; "
-            "connect-src 'self'"
-        )
-    
-    return response
-
 if __name__ == '__main__':
     # In a production environment, use a production-ready WSGI server
     # and configure the host and port appropriately.
