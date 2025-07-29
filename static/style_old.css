@@ -1,0 +1,309 @@
+/* IFS Theme Variables */
+:root {
+    /* IFS Brand Colors */
+    --ifs-primary: #0066CC;
+    --ifs-primary-dark: #004499;
+    --ifs-primary-light: #3385D6;
+    --ifs-secondary: #00B4D8;
+    --ifs-accent: #FF6B35;
+    --ifs-success: #28A745;
+    --ifs-warning: #FFC107;
+    --ifs-error: #DC3545;
+    
+    /* Neutral Colors */
+    --color-white: #FFFFFF;
+    --color-gray-50: #F8F9FA;
+    --color-gray-100: #F1F3F4;
+    --color-gray-200: #E3E6EA;
+    --color-gray-300: #DEE2E6;
+    --color-gray-400: #CED4DA;
+    --color-gray-500: #6C757D;
+    --color-gray-600: #495057;
+    --color-gray-700: #343A40;
+    --color-gray-800: #212529;
+    --color-gray-900: #1A1D20;
+    
+    /* Typography */
+    --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --font-family-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Cascadia Code', 'Consolas', monospace;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    
+    /* Transitions */
+    --transition: all 0.2s ease-in-out;
+    --transition-slow: all 0.3s ease-in-out;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff; /* White container background */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 10px;
+        gap: 15px;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+    
+    textarea {
+        min-height: 120px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    button#generate-btn {
+        padding: 15px 12px;
+        font-size: 1em;
+    }
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 1.8em;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0; /* Light grey border */
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 150px;
+    font-size: 1em;
+    resize: vertical;
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+textarea:focus {
+    border-color: #10a37f; /* ChatGPT green focus */
+}
+
+button#generate-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #10a37f; /* ChatGPT green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button#generate-btn:hover:not(:disabled) {
+    background-color: #0e7a60; /* Darker green on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 163, 127, 0.3);
+}
+
+button#generate-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+button#generate-btn:disabled {
+    background-color: #cccccc; /* Grey background when disabled */
+    color: #666666; /* Darker grey text */
+    cursor: not-allowed; /* Show not-allowed cursor */
+    opacity: 0.6; /* Make it slightly transparent */
+    transform: none;
+    box-shadow: none;
+}
+
+button#generate-btn:disabled:hover {
+    background-color: #cccccc; /* Keep grey background on hover when disabled */
+}
+
+/* Copy button success state */
+.copy-button.success-state {
+    background-color: #10a37f;
+    color: white;
+}
+
+/* Input section styling */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.result-container {
+    position: relative;
+    margin-top: 10px;
+    padding: 20px;
+    background-color: #f7f7f8; /* Light grey background for result */
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 60px;
+    transition: border-color 0.3s ease;
+}
+
+.result-container:empty {
+    display: none;
+}
+
+/* Loading state for result container */
+.result-container:has(.loading-dots) {
+    border-color: #10a37f;
+    background-color: #f0fdf4;
+}
+
+#result {
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.95em;
+    color: #333;
+    overflow-x: auto;
+    padding-bottom: 30px; /* Space for copy button */
+}
+
+#result pre {
+    background-color: #e0e0e0; /* Even lighter grey for code blocks */
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+
+#result code {
+    font-family: inherit;
+}
+
+button.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #ccc; /* Grey button */
+    color: #333;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.result-container:hover .copy-button,
+button.copy-button:focus {
+    opacity: 1;
+    visibility: visible;
+}
+
+.copy-button:hover {
+    background-color: #b3b3b3; /* Darker grey on hover */
+}
+
+/* Error message styling */
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #c33;
+    margin: 10px 0;
+}
+
+.success-message {
+    background-color: #efe;
+    color: #363;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #363;
+    margin: 10px 0;
+}
+
+/* Loading animation for result area */
+.loading-dots {
+    display: inline-block;
+}
+
+.loading-dots::after {
+    content: '';
+    animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* Accessibility improvements */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus improvements */
+textarea:focus,
+button:focus {
+    outline: 2px solid #10a37f;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    button#generate-btn {
+        border: 2px solid #000;
+    }
+    
+    .result-container {
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

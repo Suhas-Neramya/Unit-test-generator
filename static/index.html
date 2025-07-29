@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFS PLSQL Unit Test Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <meta name="description" content="Generate comprehensive unit tests for your PLSQL code using AI - Powered by IFS">
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/5/59/IFS_logo_2021.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header with IFS Branding -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/IFS_logo_2021.png" alt="IFS Logo" class="ifs-logo">
+                    <div class="app-title">
+                        <h1>PLSQL Unit Test Generator</h1>
+                        <p class="app-subtitle">Powered by AI • ChatGPT Enterprise</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="history-btn" id="history-btn" title="View History">
+                        <i class="fas fa-history"></i>
+                        History
+                    </button>
+                    <button class="settings-btn" id="settings-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="container">
+                <!-- Input Section -->
+                <div class="input-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-code"></i> Your PLSQL Code</h2>
+                        <div class="input-actions">
+                            <button class="btn-secondary" id="clear-btn" title="Clear input">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                            <button class="btn-secondary" id="format-btn" title="Format code">
+                                <i class="fas fa-align-left"></i> Format
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-container">
+                        <label for="plsql-code" class="sr-only">PLSQL Code Input</label>
+                        <textarea 
+                            id="plsql-code" 
+                            placeholder="Paste your PLSQL code here... (Ctrl+Enter to generate)"
+                            aria-label="Enter your PLSQL code here"
+                            rows="12"
+                            spellcheck="false"
+                        ></textarea>
+                        <div class="input-stats">
+                            <span id="char-count">0 characters</span>
+                            <span id="line-count">1 line</span>
+                        </div>
+                    </div>
+                    
+                    <button 
+                        id="generate-btn" 
+                        type="button"
+                        class="btn-primary generate-btn"
+                        aria-describedby="generate-help"
+                    >
+                        <i class="fas fa-magic"></i>
+                        <span class="btn-text">Generate Unit Tests</span>
+                    </button>
+                    <div id="generate-help" class="sr-only">
+                        Click to generate unit tests for your PLSQL code
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-flask"></i> Generated Unit Tests</h2>
+                        <div class="result-actions" id="result-actions" style="display: none;">
+                            <button class="btn-secondary" id="save-btn" title="Save to history">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn-secondary" id="copy-btn" title="Copy to clipboard">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <button class="btn-secondary" id="download-btn" title="Download as file">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="result-container" id="result-container" role="region" aria-label="Generated test results">
+                        <div id="result" aria-live="polite">
+                            <div class="empty-state">
+                                <i class="fas fa-code-branch"></i>
+                                <h3>Ready to Generate Tests</h3>
+                                <p>Enter your PLSQL code above and click "Generate Unit Tests" to get started.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- History Modal -->
+        <div class="modal" id="history-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-history"></i> Test Generation History</h2>
+                    <button class="modal-close" id="close-history">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="history-filters">
+                        <input type="search" id="history-search" placeholder="Search history..." class="search-input">
+                        <button class="btn-secondary" id="clear-history" title="Clear all history">
+                            <i class="fas fa-trash"></i> Clear All
+                        </button>
+                    </div>
+                    <div id="history-list" class="history-list">
+                        <!-- History items will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay -->
+        <div class="modal-overlay" id="modal-overlay"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

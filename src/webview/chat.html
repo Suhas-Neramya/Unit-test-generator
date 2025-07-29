@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLSQL Test Generator Chat</title>
+    <style>
+        body {
+            font-family: var(--vscode-font-family);
+            padding: 20px;
+            color: var(--vscode-editor-foreground);
+            background-color: var(--vscode-editor-background);
+        }
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+        }
+        .messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 4px;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        textarea {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid var(--vscode-input-border);
+            border-radius: 4px;
+            background-color: var(--vscode-input-background);
+            color: var(--vscode-input-foreground);
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: var(--vscode-button-hoverBackground);
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .user-message {
+            background-color: var(--vscode-editor-inactiveSelectionBackground);
+        }
+        .assistant-message {
+            background-color: var(--vscode-editor-selectionBackground);
+        }
+        .error {
+            color: var(--vscode-errorForeground);
+            background-color: var(--vscode-inputValidation-errorBackground);
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        pre {
+            background-color: var(--vscode-editor-background);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: var(--vscode-editor-font-family);
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="input-container">
+            <textarea id="codeInput" placeholder="Paste your PLSQL code here..."></textarea>
+            <button id="generateButton">Generate Test</button>
+        </div>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        const messagesContainer = document.getElementById('messages');
+        const codeInput = document.getElementById('codeInput');
+        const generateButton = document.getElementById('generateButton');
+
+        // Handle messages from the extension
+        window.addEventListener('message', event => {
+            const message = event.data;
+            switch (message.type) {
+                case 'testGenerated':
+                    addMessage('assistant', message.test);
+                    break;
+                case 'error':
+                    addMessage('error', message.error);
+                    break;
+            }
+        });
+
+        // Handle generate button click
+        generateButton.addEventListener('click', () => {
+            const code = codeInput.value.trim();
+            if (!code) {
+                addMessage('error', 'Please enter some PLSQL code first.');
+                return;
+            }
+
+            addMessage('user', '```sql\n' + code + '\n```');
+            vscode.postMessage({
+                type: 'generateTest',
+                code: code
+            });
+        });
+
+        function addMessage(type, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            if (type === 'error') {
+                messageDiv.className = 'error';
+                messageDiv.textContent = content;
+            } else {
+                // Convert markdown code blocks to formatted HTML
+                content = content.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, language, code) => {
+                    return `<pre><code>${code}</code></pre>`;
+                });
+                messageDiv.innerHTML = content;
+            }
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html> 
