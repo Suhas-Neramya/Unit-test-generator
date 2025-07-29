@@ -83,14 +83,32 @@ def generate_test():
 
     openai_api_key = os.environ.get('OPENAI_API_KEY')
     if not openai_api_key:
+        print("ERROR: OPENAI_API_KEY environment variable is not set")
         return jsonify({'error': 'OpenAI API key not configured. Set the OPENAI_API_KEY environment variable.'}), 500
 
-    # Create a custom httpx client that does not use environment variables for proxies
-    http_client = httpx.Client(trust_env=False)
+    print(f"INFO: OpenAI API key found (length: {len(openai_api_key)} characters)")
+    print(f"INFO: API key starts with: {openai_api_key[:10]}...")
 
-    openai_client = openai.OpenAI(api_key=openai_api_key, http_client=http_client)
+    # Create a custom httpx client that does not use environment variables for proxies
+    try:
+        http_client = httpx.Client(trust_env=False, timeout=60.0)
+        print("INFO: HTTP client created successfully")
+    except Exception as e:
+        print(f"ERROR: Failed to create HTTP client: {e}")
+        return jsonify({'error': f'Failed to create HTTP client: {str(e)}'}), 500
+
+    try:
+        openai_client = openai.OpenAI(api_key=openai_api_key, http_client=http_client)
+        print("INFO: OpenAI client created successfully")
+    except Exception as e:
+        print(f"ERROR: Failed to create OpenAI client: {e}")
+        return jsonify({'error': f'Failed to create OpenAI client: {str(e)}'}), 500
     
     try:
+        print("INFO: Starting OpenAI API request...")
+        print(f"INFO: Using model: gpt-4o-mini")
+        print(f"INFO: Input code length: {len(plsql_code)} characters")
+        
         prompt = [
             {
                 'role': 'system',
@@ -115,21 +133,50 @@ def generate_test():
             messages=prompt,
             timeout=30  # 30 second timeout
         )
-
+        
+        print("INFO: OpenAI API request completed successfully")
         generated_test = completion.choices[0].message.content
 
         return jsonify({'test': generated_test})
 
-    except openai.RateLimitError:
+    except openai.AuthenticationError as e:
+        error_msg = f"OpenAI Authentication Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': 'Invalid OpenAI API key. Please check your API key configuration.'}), 401
+    except openai.PermissionDeniedError as e:
+        error_msg = f"OpenAI Permission Denied: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': 'OpenAI API access denied. Check your API key permissions.'}), 403
+    except openai.RateLimitError as e:
+        error_msg = f"OpenAI Rate Limit Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
         return jsonify({'error': 'OpenAI API rate limit exceeded. Please try again later.'}), 429
-    except openai.APITimeoutError:
+    except openai.APITimeoutError as e:
+        error_msg = f"OpenAI Timeout Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
         return jsonify({'error': 'Request timed out. Please try again.'}), 408
+    except openai.APIConnectionError as e:
+        error_msg = f"OpenAI Connection Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': f'Connection error: {str(e)}. Check your internet connection.'}), 503
     except openai.APIError as e:
-        print(f"OpenAI API error: {e}")
-        return jsonify({'error': 'AI service temporarily unavailable. Please try again later.'}), 503
+        error_msg = f"OpenAI API Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': f'AI service error: {str(e)}'}), 503
+    except httpx.ConnectError as e:
+        error_msg = f"HTTP Connection Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': f'Network connection error: {str(e)}'}), 503
+    except httpx.TimeoutException as e:
+        error_msg = f"HTTP Timeout Error: {str(e)}"
+        print(f"ERROR: {error_msg}")
+        return jsonify({'error': f'Request timeout: {str(e)}'}), 408
     except Exception as e:
-        print(f"Error during OpenAI API call: {e}")
-        return jsonify({'error': 'An unexpected error occurred. Please try again.'}), 500
+        error_msg = f"Unexpected Error: {str(e)} (Type: {type(e).__name__})"
+        print(f"ERROR: {error_msg}")
+        import traceback
+        print(f"ERROR: Full traceback:\n{traceback.format_exc()}")
+        return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
 
 if __name__ == '__main__':
     # In a production environment, use a production-ready WSGI server
